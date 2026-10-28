@@ -1,0 +1,15 @@
+{
+  "name": "Daily Health Companion",
+  "short_name": "HealthTracker",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAF8F5",
+  "theme_color": "#1E3A8A",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
