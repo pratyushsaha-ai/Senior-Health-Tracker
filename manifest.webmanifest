@@ -1,15 +1,20 @@
 {
-  "name": "Daily Health Companion",
-  "short_name": "HealthTracker",
-  "start_url": "/",
+  "name": "Parents Daily Health Companion",
+  "short_name": "ParentsHealthTracker",
+  "id": "io.github.pratyushsaha-ai.senior-health-tracker",
+  "description": "A dedicated daily health companion designed for seniors to effortlessly track vital health metrics, monitor daily wellness, and stay on top of their care routine.",
+  "start_url": "/Senior-Health-Tracker/",
+  "scope": "/Senior-Health-Tracker/",
   "display": "standalone",
-  "background_color": "#FAF8F5",
+  "display_override": ["window-controls-overlay"],
+  "background_color": "#faf8f5",
   "theme_color": "#1E3A8A",
+  "dir": "ltr",
+  "lang": "en",
+  "orientation": "portrait",
   "icons": [
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
