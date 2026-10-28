@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <!-- Strict Air-Gapped Content Security Policy: Blocks all external scripts, tracking, and network requests -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:;">
+  <meta name="theme-color" content="#1E3A8A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Daily Health Companion</title>
+
+  <style>
+    /* ==========================================================================
+       SENIOR-FIRST ACCESSIBLE DESIGN SYSTEM
+       High contrast, warm cream surface, zero visual clutter, huge touch targets
+       ========================================================================== */
+    :root {
+      --scale: 1;
+      --bg-outer: #E2DDD5;
+      --bg-app: #FAF8F5;
+      --card-bg: #FFFFFF;
+      --text-main: #111827;
+      --text-sub: #374151;
+      --border-soft: #D1D5DB;
+      --border-strong: #9CA3AF;
+
+      /* Primary Brand & Status Colors */
+      --navy-dark: #1E3A8A;
+      --navy-light: #EFF6FF;
+      --green-done: #15803D;
+      --green-bg: #DCFCE7;
+      --green-border: #22C55E;
+      --amber-bg: #FEF3C7;
+      --amber-text: #92400E;
+      --amber-border: #F59E0B;
+      --red-yt: #DC2626;
+      --red-yt-dark: #B91C1C;
+
+      /* Scaled Typography for 70+ Readability */
+      --f-xs: calc(16px * var(--scale));
+      --f-sm: calc(18px * var(--scale));
+      --f-base: calc(21px * var(--scale));
+      --f-lg: calc(24px * var(--scale));
+      --f-xl: calc(28px * var(--scale));
+    }
+
+    body.large-text {
+      --scale: 1.18;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      background-color: var(--bg-outer);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: var(--f-base);
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Centered Handheld Phone Frame on Desktop, 100% Full Screen on Mobile */
+    .phone-frame {
+      width: 100%;
+      max-width: 460px;
+      min-height: 100vh;
+      margin: 0 auto;
+      background-color: var(--bg-app);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+    }
+
+    @media (min-width: 500px) {
+      body {
+        padding: 16px 0;
+      }
+      .phone-frame {
+        min-height: calc(100vh - 32px);
+        border-radius: 28px;
+        overflow: hidden;
+        border: 4px solid #CBD5E1;
+      }
+    }
+
+    /* ==========================================================================
+       STICKY HEADER BAR
+       ========================================================================== */
+    .app-header {
+      background: #FFFFFF;
+      border-bottom: 2px solid var(--border-soft);
+      padding: 16px 18px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    .header-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .date-label {
+      font-size: var(--f-lg);
+      font-weight: 800;
+      color: var(--navy-dark);
+      letter-spacing: -0.01em;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .top-btn {
+      min-height: 48px;
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: var(--f-xs);
+      font-weight: 800;
+      border: 2px solid var(--navy-dark);
+      background: var(--navy-light);
+      color: var(--navy-dark);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .top-btn.active-toggle {
+      background: var(--navy-dark);
+      color: #FFFFFF;
+    }
+
+    .top-btn-save {
+      background: #FEF3C7;
+      border-color: #D97706;
+      color: #92400E;
+    }
+
+    /* Progress Pill & Bar */
+    .progress-box {
+      background: #F3F4F6;
+      border: 2px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .progress-title {
+      font-size: var(--f-sm);
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .progress-pill {
+      background: var(--green-done);
+      color: #FFFFFF;
+      font-size: var(--f-sm);
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 16px;
+      background: #E5E7EB;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #16A34A, #15803D);
+      border-radius: 999px;
+      transition: width 0.35s ease;
+    }
+
+    /* ==========================================================================
+       MAIN CONTENT AREA
+       ========================================================================== */
+    .app-main {
+      flex: 1;
+      padding: 20px 16px 125px 16px;
+    }
+
+    .tab-view {
+      display: none;
+    }
+
+    .tab-view.active {
+      display: block;
+    }
+
+    .section-intro {
+      font-size: var(--f-sm);
+      color: var(--text-sub);
+      font-weight: 600;
+      margin-bottom: 18px;
+      padding: 0 4px;
+    }
+
+    /* ==========================================================================
+       TAB 1: LARGE SINGLE-TAP CHECKLIST CARDS
+       ========================================================================== */
+    .checklist-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .habit-card {
+      width: 100%;
+      min-height: 92px;
+      background: var(--card-bg);
+      border: 3px solid var(--border-soft);
+      border-radius: 20px;
+      padding: 18px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+      transition: transform 0.1s ease, background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .habit-card:active {
+      transform: scale(0.985);
+    }
+
+    .habit-card.completed {
+      background: var(--green-bg);
+      border-color: var(--green-border);
+    }
+
+    /* Giant Check Circle (48px x 48px) */
+    .check-circle {
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      border-radius: 50%;
+      border: 3px solid var(--border-strong);
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 4px;
+      font-size: 28px;
+      font-weight: 900;
+      color: transparent;
+    }
+
+    .habit-card.completed .check-circle {
+      background: var(--green-done);
+      border-color: var(--green-done);
+      color: #FFFFFF;
+    }
+
+    .habit-body {
+      flex: 1;
+    }
+
+    .habit-top-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .time-badge {
+      display: inline-block;
+      background: var(--navy-light);
+      color: var(--navy-dark);
+      font-size: var(--f-xs);
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid #BFDBFE;
+    }
+
+    .done-pill {
+      display: none;
+      background: var(--green-done);
+      color: #FFFFFF;
+      font-size: calc(14px * var(--scale));
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+
+    .habit-card.completed .done-pill {
+      display: inline-block;
+    }
+
+    .habit-title {
+      font-size: var(--f-base);
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .habit-desc {
+      font-size: var(--f-sm);
+      color: var(--text-sub);
+      font-weight: 500;
+    }
+
+    .reset-day-btn {
+      width: 100%;
+      min-height: 68px;
+      margin-top: 28px;
+      background: #FFFFFF;
+      border: 3px solid #9CA3AF;
+      border-radius: 18px;
+      font-size: var(--f-base);
+      font-weight: 800;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .reset-day-btn:active {
+      background: #F3F4F6;
+    }
+
+    /* ==========================================================================
+       TAB 2: VERTICAL DIET CARDS (NO CRAMPED TABLES)
+       ========================================================================== */
+    .meal-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .meal-card {
+      background: var(--card-bg);
+      border: 3px solid var(--border-soft);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .meal-banner {
+      background: var(--navy-dark);
+      color: #FFFFFF;
+      padding: 14px 18px;
+      font-size: var(--f-base);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .meal-items {
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .food-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-bottom: 14px;
+      border-bottom: 2px dashed #E5E7EB;
+    }
+
+    .food-row:last-child {
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .food-name {
+      font-size: var(--f-base);
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .qty-badge {
+      align-self: flex-start;
+      background: #ECFDF5;
+      color: #065F46;
+      border: 2px solid #6EE7B7;
+      font-size: var(--f-sm);
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 12px;
+    }
+
+    .meal-why {
+      background: var(--amber-bg);
+      color: var(--amber-text);
+      border-top: 2px solid var(--amber-border);
+      padding: 12px 18px;
+      font-size: var(--f-sm);
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       TAB 3: TAI CHI STEP CARDS, BUILT-IN TIMER & HUGE YOUTUBE BUTTONS
+       ========================================================================== */
+    .timer-panel {
+      background: var(--navy-dark);
+      color: #FFFFFF;
+      border-radius: 22px;
+      padding: 20px 18px;
+      margin-bottom: 24px;
+      text-align: center;
+      box-shadow: 0 6px 16px rgba(30, 58, 138, 0.25);
+    }
+
+    .timer-label {
+      font-size: var(--f-sm);
+      font-weight: 700;
+      color: #DBEAFE;
+      margin-bottom: 6px;
+    }
+
+    .timer-digits {
+      font-size: calc(48px * var(--scale));
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #FDE047;
+      margin-bottom: 14px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer-btn {
+      width: 100%;
+      min-height: 68px;
+      border-radius: 16px;
+      border: none;
+      background: #22C55E;
+      color: #FFFFFF;
+      font-size: var(--f-lg);
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .timer-btn.running {
+      background: #F59E0B;
+      color: #111827;
+    }
+
+    .taichi-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .step-card {
+      background: var(--card-bg);
+      border: 3px solid var(--border-soft);
+      border-radius: 22px;
+      padding: 20px 18px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .step-header-pill {
+      display: inline-block;
+      background: var(--navy-light);
+      color: var(--navy-dark);
+      font-size: var(--f-xs);
+      font-weight: 900;
+      padding: 6px 12px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border: 2px solid #93C5FD;
+    }
+
+    .step-title {
+      font-size: var(--f-lg);
+      font-weight: 900;
+      color: var(--text-main);
+      margin-bottom: 14px;
+      line-height: 1.3;
+    }
+
+    .step-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .step-bullets li {
+      position: relative;
+      padding-left: 28px;
+      font-size: var(--f-base);
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .step-bullets li::before {
+      content: "•";
+      position: absolute;
+      left: 6px;
+      top: -2px;
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--navy-dark);
+    }
+
+    .video-btn-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding-top: 16px;
+      border-top: 2px dashed var(--border-soft);
+    }
+
+    .yt-video-btn {
+      width: 100%;
+      min-height: 68px;
+      background: var(--red-yt);
+      color: #FFFFFF;
+      text-decoration: none;
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: var(--f-sm);
+      font-weight: 800;
+      box-shadow: 0 4px 10px rgba(220, 38, 38, 0.25);
+      border: 2px solid #991B1B;
+    }
+
+    .yt-video-btn:active {
+      background: var(--red-yt-dark);
+      transform: scale(0.99);
+    }
+
+    .yt-play-badge {
+      width: 42px;
+      height: 42px;
+      min-width: 42px;
+      background: #FFFFFF;
+      color: var(--red-yt);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    /* ==========================================================================
+       STICKY 3-TAB BOTTOM NAVIGATION BAR
+       ========================================================================== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 460px;
+      background: #FFFFFF;
+      border-top: 3px solid var(--border-soft);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 10px 12px;
+      z-index: 40;
+      box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    @media (min-width: 500px) {
+      .bottom-nav {
+        bottom: 16px;
+        border-bottom-left-radius: 24px;
+        border-bottom-right-radius: 24px;
+      }
+    }
+
+    .nav-tab {
+      min-height: 74px;
+      border-radius: 16px;
+      border: 2px solid transparent;
+      background: #F3F4F6;
+      color: var(--text-sub);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      padding: 6px 4px;
+    }
+
+    .nav-tab .nav-icon {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .nav-tab .nav-label {
+      font-size: calc(17px * var(--scale));
+      font-weight: 800;
+    }
+
+    .nav-tab.active {
+      background: var(--navy-dark);
+      color: #FFFFFF;
+      border-color: var(--navy-dark);
+    }
+
+    /* ==========================================================================
+       SIMPLE MODALS (RESET CONFIRMATION & SAVE APP HELP)
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(17, 24, 39, 0.72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 420px;
+      background: #FFFFFF;
+      border-radius: 24px;
+      padding: 24px 20px;
+      border: 3px solid var(--border-soft);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-title {
+      font-size: var(--f-lg);
+      font-weight: 900;
+      color: var(--navy-dark);
+      margin-bottom: 12px;
+    }
+
+    .modal-text {
+      font-size: var(--f-base);
+      color: var(--text-main);
+      margin-bottom: 20px;
+    }
+
+    .modal-steps {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .modal-steps li {
+      background: #F9FAFB;
+      border: 2px solid var(--border-soft);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: var(--f-sm);
+      font-weight: 600;
+    }
+
+    .modal-btn-row {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal-btn {
+      width: 100%;
+      min-height: 64px;
+      border-radius: 16px;
+      font-size: var(--f-base);
+      font-weight: 800;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .modal-btn-primary {
+      background: var(--navy-dark);
+      color: #FFFFFF;
+    }
+
+    .modal-btn-green {
+      background: var(--green-done);
+      color: #FFFFFF;
+    }
+
+    .modal-btn-cancel {
+      background: #F3F4F6;
+      color: var(--text-main);
+      border-color: var(--border-strong);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="phone-frame">
+    <!-- ======================================================================
+         STICKY TOP HEADER
+         ====================================================================== -->
+    <header class="app-header">
+      <div class="header-top-row">
+        <div class="date-label" id="dateDisplay">Today</div>
+        <div class="header-actions">
+          <button type="button" class="top-btn" id="textSizeBtn" onclick="toggleLargeText()">
+            A+ Larger Text
+          </button>
+          <button type="button" class="top-btn top-btn-save" onclick="openSaveModal()">
+            📲 Save App
+          </button>
+        </div>
+      </div>
+
+      <div class="progress-box">
+        <div class="progress-row">
+          <span class="progress-title">Daily Progress</span>
+          <span class="progress-pill" id="progressPillText">0 of 6 Done Today</span>
+        </div>
+        <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="6" id="progressTrack">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ======================================================================
+         MAIN VIEWPORT
+         ====================================================================== -->
+    <main class="app-main">
+
+      <!-- TAB 1: TODAY'S CHECKLIST -->
+      <section id="tab-checklist" class="tab-view active" aria-label="Today's Checklist">
+        <p class="section-intro">Tap any box below when you finish that habit:</p>
+
+        <div class="checklist-stack" id="checklistContainer"></div>
+
+        <button type="button" class="reset-day-btn" onclick="openResetModal()">
+          🔄 Reset All for a New Day
+        </button>
+      </section>
+
+      <!-- TAB 2: EXACT DIET CHART (VERTICAL MEAL CARDS) -->
+      <section id="tab-diet" class="tab-view" aria-label="Diet Chart">
+        <p class="section-intro">Exact cooked quantities for easy digestion and steady strength:</p>
+
+        <div class="meal-stack">
+          <!-- 8:00 AM Breakfast -->
+          <article class="meal-card">
+            <div class="meal-banner">🥣 8:00 AM — BREAKFAST</div>
+            <div class="meal-items">
+              <div class="food-row">
+                <div class="food-name">🌾 Soft Dalia or Oats</div>
+                <div class="qty-badge">200g (1 medium bowl)</div>
+              </div>
+              <div class="food-row">
+                <div class="food-name">🥚 Mashed Boiled Egg or Soft Paneer</div>
+                <div class="qty-badge">50g (1 egg / 3 cubes)</div>
+              </div>
+              <div class="food-row">
+                <div class="food-name">🍎 Stewed Apple or Mashed Papaya</div>
+                <div class="qty-badge">100g (half bowl)</div>
+              </div>
+            </div>
+            <div class="meal-why">💡 High fiber for digestion and gentle protein to protect muscle strength.</div>
+          </article>
+
+          <!-- 11:00 AM Mid-Morning Hydration -->
+          <article class="meal-card">
+            <div class="meal-banner">🥥 11:00 AM — MID-MORNING HYDRATION</div>
+            <div class="meal-items">
+              <div class="food-row">
+                <div class="food-name">🥤 Coconut Water or Buttermilk</div>
+                <div class="qty-badge">200ml (1 glass)</div>
+              </div>
+              <div class="food-row">
+                <div class="food-name">🌰 Soaked &amp; Crushed Walnuts</div>
+                <div class="qty-badge">15g (2 whole walnuts)</div>
+              </div>
+            </div>
+            <div class="meal-why">💡 Natural electrolytes and healthy Omega-3 fats to nourish brain cells.</div>
+          </article>
+
+          <!-- 1:30 PM Lunch -->
+          <article class="meal-card">
+            <div class="meal-banner">🍛 1:30 PM — LUNCH</div>
+            <div class="meal-items">
+              <div class="food-row">
+                <div class="food-name">🍚 Soft Cooked Rice OR Soft Phulkas</div>
+                <div class="qty-badge">150g Rice / 2 Phulkas</div>
+              </div>
+              <div class="food-row">
+                <div class="food-name">🥣 Yellow Moong Dal (soupy)</div>
+                <div class="qty-badge">150g (1 katori)</div>
+              </div>
+              <div class="food-row">
+                <div class="food-name">🐟 Soft Fish Stew (Rui) or Tofu</div>
+                <div class="qty-badge">100g (1 medium piece)</div>
+              </div>
+              <div class="food-row">
+                <div class="food-name">🥬 Boiled &amp; Mashed Spinach (Palak)</div>
+                <div class="qty-badge">100g (half katori)</div>
+              </div>
+            </div>
+            <div class="meal-why">💡 Soft texture for safe swallowing plus iron and neuro-protective nutrients.</div>
+          </article>
+
+          <!-- 5:00 PM Evening Snack -->
+          <article class="meal-card">
+            <div class="meal-banner">🍵 5:00 PM — EVENING SNACK</div>
+            <div class="meal-items">
+              <div class="food-row">
+                <div class="food-name">🍋 Green Tea or Warm Lemon Water</div>
+                <div class="qty-badge">150ml (1 cup)</div>
+              </div>
+              <div class="food-row">
+                <div class="food-name">⚪ Roasted Makhana (Fox nuts)</div>
+                <div class="qty-badge">20g (1 handful)</div>
+              </div>
+            </div>
+            <div class="meal-why">💡 Gentle antioxidants and natural calcium for strong bones and joints.</div>
+          </article>
+
+          <!-- 7:30 PM Early Dinner -->
+          <article class="meal-card">
+            <div class="meal-banner">🍲 7:30 PM — EARLY DINNER</div>
+            <div class="meal-items">
+              <div class="food-row">
+                <div class="food-name">🍲 Soft Vegetable Khichdi</div>
+                <div class="qty-badge">250g (1.5 bowls)</div>
+              </div>
+              <div class="food-row">
+                <div class="food-name">🥕 Steamed Carrots &amp; Beans (very soft)</div>
+                <div class="qty-badge">100g (half katori)</div>
+              </div>
+            </div>
+            <div class="meal-why">💡 Warm, soothing, and light on the stomach for peaceful night sleep.</div>
+          </article>
+        </div>
+      </section>
+
+      <!-- TAB 3: TAI CHI ROUTINE (STEP-BY-STEP + YOUTUBE LINKS) -->
+      <section id="tab-taichi" class="tab-view" aria-label="Tai Chi Routine">
+        <!-- Simple 2-Minute Practice Timer -->
+        <div class="timer-panel">
+          <div class="timer-label" id="timerStatusText">2-Minute Gentle Practice Timer</div>
+          <div class="timer-digits" id="timerDisplay">02:00</div>
+          <button type="button" class="timer-btn" id="timerToggleBtn" onclick="togglePracticeTimer()">
+            ▶ START 2-MIN TIMER
+          </button>
+        </div>
+
+        <div class="taichi-stack">
+          <!-- Step 1 -->
+          <article class="step-card">
+            <div class="step-header-pill">STEP 1 • 5 MINUTES</div>
+            <h2 class="step-title">Seated Chair Warm-Up</h2>
+            <ul class="step-bullets">
+              <li>Sit comfortably upright in a sturdy chair.</li>
+              <li><strong>Ankle Circles:</strong> Lift one foot slightly, rotate ankle slowly 5 times each way.</li>
+              <li><strong>Shoulder Rolls:</strong> Roll both shoulders gently backward 10 times.</li>
+            </ul>
+            <div class="video-btn-stack">
+              <a href="http://www.youtube.com/watch?v=sYAGbGEQMGE" target="_blank" rel="noopener noreferrer" class="yt-video-btn">
+                <span class="yt-play-badge">▶</span>
+                <span>Watch Video: Seated Ankle Circles (0:50)</span>
+              </a>
+              <a href="http://www.youtube.com/watch?v=XbzY45Z5DE8" target="_blank" rel="noopener noreferrer" class="yt-video-btn">
+                <span class="yt-play-badge">▶</span>
+                <span>Watch Video: Seated Shoulder Rolls (0:52)</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Step 2 -->
+          <article class="step-card">
+            <div class="step-header-pill">STEP 2 • 5 MINUTES</div>
+            <h2 class="step-title">"Raising the Power" Breathing</h2>
+            <ul class="step-bullets">
+              <li>Stand near a wall or chair (or stay seated).</li>
+              <li><strong>Breathe In:</strong> Slowly float both hands up to shoulder height.</li>
+              <li><strong>Breathe Out:</strong> Gently press palms down to waist level. Repeat 10 times.</li>
+            </ul>
+            <div class="video-btn-stack">
+              <a href="http://www.youtube.com/watch?v=8xPUU2O95ng" target="_blank" rel="noopener noreferrer" class="yt-video-btn">
+                <span class="yt-play-badge">▶</span>
+                <span>Watch Video: Gentle Arm Raise &amp; Breathing (0:11)</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Step 3 -->
+          <article class="step-card">
+            <div class="step-header-pill">STEP 3 • 5 MINUTES</div>
+            <h2 class="step-title">"Cloud Hands" Balance Shift</h2>
+            <ul class="step-bullets">
+              <li>Shift weight gently to your right foot.</li>
+              <li>Sweep right hand slowly across your body; follow your hand with your eyes.</li>
+              <li>Shift weight to your left foot and sweep left hand across. Practice for 2 minutes.</li>
+            </ul>
+            <div class="video-btn-stack">
+              <a href="http://www.youtube.com/watch?v=NH-cGl9s158" target="_blank" rel="noopener noreferrer" class="yt-video-btn">
+                <span class="yt-play-badge">▶</span>
+                <span>Watch Video: Standing Cloud Hands (1:47)</span>
+              </a>
+              <a href="http://www.youtube.com/watch?v=6qaf-p7IjaI" target="_blank" rel="noopener noreferrer" class="yt-video-btn">
+                <span class="yt-play-badge">▶</span>
+                <span>Watch Video: Seated Chair Cloud Hands (3:00)</span>
+              </a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ======================================================================
+         3 LARGE BOTTOM NAVIGATION TABS
+         ====================================================================== -->
+    <nav class="bottom-nav" aria-label="Main Navigation">
+      <button type="button" class="nav-tab active" id="nav-checklist" onclick="switchTab('checklist')">
+        <span class="nav-icon">✅</span>
+        <span class="nav-label">Checklist</span>
+      </button>
+      <button type="button" class="nav-tab" id="nav-diet" onclick="switchTab('diet')">
+        <span class="nav-icon">🍲</span>
+        <span class="nav-label">Diet Chart</span>
+      </button>
+      <button type="button" class="nav-tab" id="nav-taichi" onclick="switchTab('taichi')">
+        <span class="nav-icon">🧘‍♂️</span>
+        <span class="nav-label">Tai Chi</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ========================================================================
+       MODAL 1: RESET CONFIRMATION
+       ======================================================================== -->
+  <div class="modal-backdrop" id="resetModal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <h3 class="modal-title">Start a Fresh Day?</h3>
+      <p class="modal-text">This will uncheck all 6 items so you are ready for a new morning.</p>
+      <div class="modal-btn-row">
+        <button type="button" class="modal-btn modal-btn-green" onclick="confirmResetDay()">
+          ✓ Yes, Reset Checklist
+        </button>
+        <button type="button" class="modal-btn modal-btn-cancel" onclick="closeResetModal()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL 2: SIMPLE 3-STEP ANDROID SAVE INSTRUCTIONS
+       ======================================================================== -->
+  <div class="modal-backdrop" id="saveModal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <h3 class="modal-title">📲 Put This App on Your Phone</h3>
+      <ol class="modal-steps">
+        <li><strong>Step 1:</strong> Tap the green button below to save the file onto your phone.</li>
+        <li><strong>Step 2:</strong> Open <strong>Google Chrome</strong>, tap the <strong>3 dots (⋮)</strong> at the top-right, tap <strong>Downloads</strong>, and tap <code>senior_health_tracker.html</code>.</li>
+        <li><strong>Step 3:</strong> Tap the <strong>3 dots (⋮)</strong> again and tap <strong>"Add to Home screen"</strong>.</li>
+      </ol>
+      <div class="modal-btn-row">
+        <button type="button" class="modal-btn modal-btn-green" onclick="downloadAppFile()">
+          ⬇ Download App File Now
+        </button>
+        <button type="button" class="modal-btn modal-btn-cancel" onclick="closeSaveModal()">
+          Close Window
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var STORAGE_KEY = "SENIOR_CARE_COMPANION_V2";
+
+      var HABITS = [
+        {
+          id: "h1",
+          time: "8:00 AM",
+          icon: "💊",
+          title: "Morning Water & Medicines",
+          desc: "1 glass warm water & daily prescribed tablets"
+        },
+        {
+          id: "h2",
+          time: "8:30 AM",
+          icon: "🥣",
+          title: "Breakfast (Dalia / Oats + Egg or Paneer)",
+          desc: "200g soft porridge + 50g protein + 100g fruit"
+        },
+        {
+          id: "h3",
+          time: "10:00 AM",
+          icon: "🧘‍♂️",
+          title: "15-Minute Gentle Tai Chi",
+          desc: "Seated warm-up, breathing, and balance movements"
+        },
+        {
+          id: "h4",
+          time: "11:00 AM",
+          icon: "🥥",
+          title: "Coconut Water & 2 Walnuts",
+          desc: "200ml hydration + 15g soaked crushed walnuts"
+        },
+        {
+          id: "h5",
+          time: "1:30 PM",
+          icon: "🍛",
+          title: "Soft Lunch & 10-Min Walk",
+          desc: "Dal, soft rice/phulka, fish/tofu, spinach + gentle stroll"
+        },
+        {
+          id: "h6",
+          time: "7:30 PM",
+          icon: "🍲",
+          title: "Light Early Dinner (Khichdi)",
+          desc: "250g soft vegetable khichdi + 100g steamed veggies"
+        }
+      ];
+
+      function getTodayKey() {
+        var d = new Date();
+        return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+      }
+
+      function formatFriendlyDate() {
+        var d = new Date();
+        var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        return days[d.getDay()] + ", " + d.getDate() + " " + months[d.getMonth()];
+      }
+
+      var state = {
+        date: getTodayKey(),
+        done: {},
+        largeText: false
+      };
+
+      function loadState() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          var parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === "object") {
+            state.largeText = Boolean(parsed.largeText);
+            if (parsed.date === getTodayKey() && parsed.done && typeof parsed.done === "object") {
+              state.done = parsed.done;
+            } else {
+              state.date = getTodayKey();
+              state.done = {};
+            }
+          }
+        } catch (e) {
+          state.done = {};
+        }
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+          // Ignore storage quota errors in restricted viewers
+        }
+      }
+
+      // Gentle audio chime using Web Audio API (no external sound files needed)
+      var audioCtx = null;
+      function playGentleChime(isSuccess) {
+        try {
+          var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return;
+          if (!audioCtx) audioCtx = new AudioContextClass();
+          if (audioCtx.state === "suspended") audioCtx.resume();
+
+          var osc = audioCtx.createOscillator();
+          var gain = audioCtx.createGain();
+          osc.type = "sine";
+          var now = audioCtx.currentTime;
+
+          if (isSuccess) {
+            osc.frequency.setValueAtTime(523.25, now); // C5
+            osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.16); // E5
+          } else {
+            osc.frequency.setValueAtTime(392.0, now); // G4
+          }
+
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.29);
+        } catch (e) {}
+      }
+
+      function renderHeader() {
+        document.getElementById("dateDisplay").textContent = formatFriendlyDate();
+
+        var doneCount = 0;
+        for (var i = 0; i < HABITS.length; i++) {
+          if (state.done[HABITS[i].id]) doneCount++;
+        }
+
+        var total = HABITS.length;
+        var pct = Math.round((doneCount / total) * 100);
+        document.getElementById("progressPillText").textContent = doneCount + " of " + total + " Done Today";
+        document.getElementById("progressFill").style.width = pct + "%";
+        document.getElementById("progressTrack").setAttribute("aria-valuenow", String(doneCount));
+
+        var textBtn = document.getElementById("textSizeBtn");
+        if (state.largeText) {
+          document.body.classList.add("large-text");
+          textBtn.classList.add("active-toggle");
+          textBtn.textContent = "A- Normal Text";
+        } else {
+          document.body.classList.remove("large-text");
+          textBtn.classList.remove("active-toggle");
+          textBtn.textContent = "A+ Larger Text";
+        }
+      }
+
+      function renderChecklist() {
+        var container = document.getElementById("checklistContainer");
+        container.innerHTML = "";
+
+        for (var i = 0; i < HABITS.length; i++) {
+          (function (habit) {
+            var isCompleted = Boolean(state.done[habit.id]);
+            var card = document.createElement("button");
+            card.type = "button";
+            card.className = "habit-card" + (isCompleted ? " completed" : "");
+            card.setAttribute("aria-pressed", isCompleted ? "true" : "false");
+
+            card.innerHTML =
+              '<div class="check-circle">' + (isCompleted ? "✓" : "") + '</div>' +
+              '<div class="habit-body">' +
+                '<div class="habit-top-line">' +
+                  '<span class="time-badge">' + habit.icon + " " + habit.time + '</span>' +
+                  '<span class="done-pill">✓ COMPLETED</span>' +
+                '</div>' +
+                '<div class="habit-title">' + habit.title + '</div>' +
+                '<div class="habit-desc">' + habit.desc + '</div>' +
+              '</div>';
+
+            card.addEventListener("click", function () {
+              state.done[habit.id] = !state.done[habit.id];
+              saveState();
+              playGentleChime(state.done[habit.id]);
+              renderHeader();
+              renderChecklist();
+            });
+
+            container.appendChild(card);
+          })(HABITS[i]);
+        }
+      }
+
+      window.toggleLargeText = function () {
+        state.largeText = !state.largeText;
+        saveState();
+        renderHeader();
+      };
+
+      window.switchTab = function (tabName) {
+        var tabs = ["checklist", "diet", "taichi"];
+        for (var i = 0; i < tabs.length; i++) {
+          var t = tabs[i];
+          var view = document.getElementById("tab-" + t);
+          var nav = document.getElementById("nav-" + t);
+          if (t === tabName) {
+            view.classList.add("active");
+            nav.classList.add("active");
+          } else {
+            view.classList.remove("active");
+            nav.classList.remove("active");
+          }
+        }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+
+      // Reset Modal Controls
+      window.openResetModal = function () {
+        document.getElementById("resetModal").classList.add("open");
+      };
+
+      window.closeResetModal = function () {
+        document.getElementById("resetModal").classList.remove("open");
+      };
+
+      window.confirmResetDay = function () {
+        state.done = {};
+        state.date = getTodayKey();
+        saveState();
+        closeResetModal();
+        playGentleChime(false);
+        renderHeader();
+        renderChecklist();
+      };
+
+      // Save App Modal Controls
+      window.openSaveModal = function () {
+        document.getElementById("saveModal").classList.add("open");
+      };
+
+      window.closeSaveModal = function () {
+        document.getElementById("saveModal").classList.remove("open");
+      };
+
+      window.downloadAppFile = function () {
+        try {
+          var htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+          var blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = url;
+          a.download = "senior_health_tracker.html";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(function () {
+            URL.revokeObjectURL(url);
+          }, 1500);
+        } catch (e) {}
+      };
+
+      // Simple 2-Minute Tai Chi Timer
+      var timerSeconds = 120;
+      var timerInterval = null;
+
+      function updateTimerUI() {
+        var mins = Math.floor(timerSeconds / 60);
+        var secs = timerSeconds % 60;
+        var mStr = mins < 10 ? "0" + mins : String(mins);
+        var sStr = secs < 10 ? "0" + secs : String(secs);
+        document.getElementById("timerDisplay").textContent = mStr + ":" + sStr;
+      }
+
+      window.togglePracticeTimer = function () {
+        var btn = document.getElementById("timerToggleBtn");
+        var status = document.getElementById("timerStatusText");
+
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          timerSeconds = 120;
+          updateTimerUI();
+          btn.classList.remove("running");
+          btn.textContent = "▶ START 2-MIN TIMER";
+          status.textContent = "2-Minute Gentle Practice Timer";
+          return;
+        }
+
+        playGentleChime(true);
+        btn.classList.add("running");
+        btn.textContent = "⏹ STOP & RESET TIMER";
+        status.textContent = "Breathe slowly and move gently...";
+
+        timerInterval = setInterval(function () {
+          timerSeconds--;
+          if (timerSeconds <= 0) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerSeconds = 120;
+            updateTimerUI();
+            btn.classList.remove("running");
+            btn.textContent = "▶ START 2-MIN TIMER";
+            status.textContent = "✓ 2 Minutes Finished! Well Done!";
+            playGentleChime(true);
+            setTimeout(function () {
+              playGentleChime(true);
+            }, 300);
+          } else {
+            updateTimerUI();
+          }
+        }, 1000);
+      };
+
+      // Initialize App
+      loadState();
+      renderHeader();
+      renderChecklist();
+      updateTimerUI();
+    })();
+  </script>
+</body>
+</html>
